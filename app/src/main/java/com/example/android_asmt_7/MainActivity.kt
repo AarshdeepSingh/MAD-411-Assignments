@@ -1,5 +1,6 @@
 package com.example.android_asmt_7
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,111 +11,72 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var expenseNameInput: EditText
-    private lateinit var amountInput: EditText
-    private lateinit var addExpenseButton: Button
-    private lateinit var expenseList: RecyclerView
-    private lateinit var expenseAdapter: ExpenseAdapter
-    private lateinit var statusMessage: TextView // TextView for showing status messages
-    private val expenses = mutableListOf<Expense>()
-
+    @SuppressLint("MissingInflatedId", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
 
-        // Initialize UI components
-        expenseNameInput = findViewById(R.id.edit_name)
-        amountInput = findViewById(R.id.edit_amount)
-        addExpenseButton = findViewById(R.id.add_expense)
-        expenseList = findViewById(R.id.recycler_view)
-        statusMessage = findViewById(R.id.status_message) // TextView for status messages
+        // Initialize UI elements
+        val expenseNameInput = findViewById<EditText>(R.id.edit_name)
+        val expenseAmountInput = findViewById<EditText>(R.id.edit_amount)
+        val addExpenseButton = findViewById<Button>(R.id.add_expense)
+        val expensesRecyclerView = findViewById<RecyclerView>(R.id.recycler_view)
 
         // Set up RecyclerView with adapter
-        expenseAdapter = ExpenseAdapter(expenses)
-        expenseList.layoutManager = LinearLayoutManager(this)
-        expenseList.adapter = expenseAdapter
+        val expenseList = mutableListOf<Expense>()
+        val expenseAdapter = ExpenseAdapter(expenseList)
+        expensesRecyclerView.layoutManager = LinearLayoutManager(this)
+        expensesRecyclerView.adapter = expenseAdapter
 
-        // Set click listener for "Add Expense" button
+        // Add expense on button click
         addExpenseButton.setOnClickListener {
-            val name = expenseNameInput.text.toString().trim()
-            val amountText = amountInput.text.toString().trim()
+            val expenseName = expenseNameInput.text.toString().trim()
+            val expenseAmount = expenseAmountInput.text.toString().trim()
 
-            // Validate inputs
-            if (name.isNotEmpty() && amountText.isNotEmpty()) {
-                val amount = amountText.toDoubleOrNull()
-                if (amount != null) {
-                    // Create a new expense and add it to the list
-                    val date = getCurrentDate()
-                    val expense = Expense(name, amount, date)
-                    expenses.add(expense)
-                    expenseAdapter.notifyItemInserted(expenses.size - 1)
-
-                    // Clear input fields
-                    expenseNameInput.text?.clear()
-                    amountInput.text?.clear()
-
-                    // Show success message in TextView
-                    statusMessage.text = "Expense added successfully!"
-                } else {
-                    // Show error message in TextView
-                    statusMessage.text = "Please enter a valid amount."
-                }
-            } else {
-                // Show error message in TextView
-                statusMessage.text = "Please fill in all fields."
+            if (expenseName.isNotEmpty() && expenseAmount.isNotEmpty()) {
+                expenseList.add(Expense(expenseName, expenseAmount))
+                expenseAdapter.notifyDataSetChanged()
+                expenseNameInput.text.clear()
+                expenseAmountInput.text.clear()
             }
         }
     }
+}
 
-    // Function to get the current date as a string
-    private fun getCurrentDate(): String {
-        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        return sdf.format(Date())
+// Data model for expense
+data class Expense(val name: String, val amount: String)
+
+class ExpenseAdapter(private val expenseList: MutableList<Expense>) :
+    RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
+
+    // ViewHolder for each expense item
+    class ExpenseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val expenseNameTextView: TextView = view.findViewById(R.id.expense_name)
+        val expenseAmountTextView: TextView = view.findViewById(R.id.expense_amount)
+        val deleteExpenseButton: Button = view.findViewById(R.id.delete_button)
     }
 
-    // Expense data class
-    data class Expense(
-        val name: String,
-        val amount: Double,
-        val date: String
-    )
-
-    // RecyclerView Adapter for displaying the expense list
-    class ExpenseAdapter(private val expenses: MutableList<Expense>) :
-        RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
-
-        // ViewHolder class to hold references to the views for each data item
-        inner class ExpenseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val expenseNameTextView: TextView = itemView.findViewById(R.id.expense_name)
-            val amountTextView: TextView = itemView.findViewById(R.id.expense_amount)
-            val deleteButton: Button = itemView.findViewById(R.id.delete_button)
-        }
-
-        // Inflates the item layout and creates the ViewHolder
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
-            val itemView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.expense_item, parent, false)
-            return ExpenseViewHolder(itemView)
-        }
-
-        // Binds the data to the views
-        override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
-            val currentExpense = expenses[position]
-            holder.expenseNameTextView.text = currentExpense.name
-            holder.amountTextView.text = currentExpense.amount.toString()
-
-            holder.deleteButton.setOnClickListener {
-                expenses.removeAt(position)
-                notifyItemRemoved(position)
-            }
-        }
-
-        // Returns the total number of items in the data set
-        override fun getItemCount() = expenses.size
+    // Inflate item layout for RecyclerView
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
+        val itemView = LayoutInflater.from(parent.context)
+            .inflate(R.layout.expense_item, parent, false)
+        return ExpenseViewHolder(itemView)
     }
+
+    // Bind expense data to the views
+    override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
+        val expense = expenseList[position]
+        holder.expenseNameTextView.text = expense.name
+        holder.expenseAmountTextView.text = "$${expense.amount}"
+        holder.deleteExpenseButton.setOnClickListener {
+            expenseList.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
+
+    override fun getItemCount(): Int = expenseList.size
 }
