@@ -4,7 +4,9 @@
 package com.example.android_asmt_7
 
 import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +22,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId", "NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
+        Log.d(TAG, "onCreate: is used")
 
         // Initialize UI elements
         val expenseNameInput = findViewById<EditText>(R.id.edit_name)
@@ -48,7 +50,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart: is used")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume: is used")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause: is used")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop: is used")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy: is used")
+    }
 }
+
+
 
 // Data model for expense
 data class Expense(val name: String, val amount: String)
