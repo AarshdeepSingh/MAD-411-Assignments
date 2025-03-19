@@ -14,7 +14,6 @@
         android:inputType="text"
         android:textSize="16sp" />
 
-    <!-- EditText for Amount (numberDecimal input type) -->
     <EditText
         android:id="@+id/edit_amount"
         android:layout_width="match_parent"
@@ -23,7 +22,13 @@
         android:inputType="numberDecimal"
         android:textSize="16sp" />
 
-    <!-- Button to Add Expense -->
+    <EditText
+        android:id="@+id/edit_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Date (MM/dd/yyyy)"
+        android:inputType="date" />
+
     <Button
         android:id="@+id/add_expense"
         android:layout_width="match_parent"
@@ -32,7 +37,6 @@
         android:textSize="16sp"
         android:layout_marginTop="16dp" />
 
-    <!-- RecyclerView to display the list of expenses -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
@@ -40,7 +44,7 @@
         android:layout_weight="1"
         android:layout_marginTop="16dp" />
 
-    <!-- TextView for status messages -->
+
     <TextView
         android:id="@+id/status_message"
         android:layout_width="match_parent"
@@ -50,4 +54,13 @@
         android:textSize="14sp"
         android:layout_marginTop="16dp"
         android:gravity="center" />
+
+    <Button
+        android:id="@+id/show_Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Financial Tips"
+        android:layout_marginTop="16dp"/>
+
+
 </LinearLayout>
