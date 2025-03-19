@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         expensesRecyclerView.layoutManager = LinearLayoutManager(this)
         expensesRecyclerView.adapter = expenseAdapter
 
+        val headerFragment = HeaderFragment()
+
         addExpenseButton.setOnClickListener {
             val expenseName = expenseNameInput.text.toString().trim()
             val expenseAmount = expenseAmountInput.text.toString().trim()
